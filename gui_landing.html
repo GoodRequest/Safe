@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <title>Safe</title>
+    <link rel="icon" href="./favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" />
+
+    <style>
+      :root {
+        --bg-color: #100f16;
+        --primary-color: #cfe838;
+        --text-color: #fff;
+        --button-text-color: #000;
+        --input-bg-color: #1e1d2b;
+        --input-placeholder-color: #ffffff99;
+        --disabled-color: #909090;
+        --option-bg-color: #252334;
+        --option-hover-bg-color: #413e5b;
+        --dropdown-box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.16);
+        --input-border-radius: 10px;
+        --font-size: 12px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        background: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+        font-family: "Fira Code", sans-serif;
+        font-weight: 300;
+        font-size: var(--font-size);
+      }
+
+      button,
+      #link,
+      #toast {
+        transition: 0.3s ease-in-out;
+      }
+
+      .logo {
+        margin-bottom: 50px;
+      }
+
+      .form {
+        width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .select-field {
+        display: flex;
+        justify-content: space-between;
+
+        width: 50%;
+        position: relative;
+
+        background-color: var(--input-bg-color);
+        color: var(--input-placeholder-color);
+        padding: 10px;
+
+        border-radius: var(--input-border-radius);
+        cursor: pointer;
+      }
+
+      @media (max-width: 550px) {
+        .form {
+          width: 90%;
+        }
+
+        .form-group {
+          flex-direction: column;
+        }
+
+        .select-field {
+          width: 100%;
+        }
+
+        #link {
+          width: 90%;
+        }
+      }
+
+      .dropdown {
+        display: flex;
+        flex-direction: column;
+        width: 80px;
+        position: absolute;
+        top: 100%;
+        overflow: hidden;
+        right: 0;
+        display: none;
+        border-radius: var(--input-border-radius);
+        margin-top: 5px;
+        box-shadow: var(--dropdown-box-shadow);
+        z-index: 10;
+      }
+
+      .dropdown.opened {
+        display: flex;
+      }
+
+      .select-value {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        color: var(--text-color);
+        gap: 10px;
+      }
+
+      .option {
+        cursor: pointer;
+        list-style-type: none;
+        text-align: center;
+        padding: 5px 10px;
+        background-color: var(--option-bg-color);
+        color: var(--text-color);
+      }
+
+      .option:first-child {
+        padding-top: 10px;
+      }
+
+      .option:last-child {
+        padding-bottom: 10px;
+      }
+
+      .option.selected {
+        background-color: var(--primary-color);
+        color: var(--button-text-color);
+      }
+
+      .option:not(.selected):hover {
+        background-color: var(--option-hover-bg-color);
+      }
+
+      textarea {
+        background-color: var(--input-bg-color);
+        color: var(--text-color);
+        padding: 10px;
+        border: none;
+        border-radius: var(--input-border-radius);
+
+        max-width: 100%;
+        min-height: 35px;
+        height: 35px;
+        max-height: 200px;
+
+        resize: none;
+        font-family: "Fira Code", sans-serif;
+        font-weight: 400;
+        font-size: var(--font-size);
+      }
+
+      textarea:focus {
+        outline: none;
+      }
+
+      button {
+        background-color: var(--primary-color);
+        color: var(--button-text-color);
+        padding: 10px;
+        border: none;
+        border-radius: var(--input-border-radius);
+        cursor: pointer;
+        display: flex;
+        gap: 2px;
+        align-items: center;
+        justify-content: center;
+
+        font-family: "Fira Code", sans-serif;
+        font-weight: 500;
+        font-size: var(--font-size);
+      }
+
+      button.disabled {
+        background-color: var(--disabled-color);
+      }
+
+      .copy-info {
+        margin-top: 30px;
+        background-color: var(--primary-color);
+        color: var(--button-text-color);
+        width: 200px;
+        padding: 10px 20px;
+        border-radius: 50px;
+      }
+
+      #toast {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #toast.visible {
+        opacity: 1;
+        pointer-events: initial;
+      }
+
+      #link {
+        position: absolute;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        opacity: 0;
+      }
+
+      #link.visible {
+        opacity: 1;
+        pointer-events: initial;
+      }
+
+      #link span {
+        color: var(--disabled-color);
+      }
+
+      #link code {
+        color: var(--disabled-color);
+        background: var(--input-bg-color);
+        border-radius: var(--input-border-radius);
+        padding: 10px;
+        cursor: pointer;
+      }
+    </style>
+
+    <script>
+      const numberOfViewsOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const lifetimeOptions = [
+        {
+          value: 5,
+          label: "5 min",
+          valueLabel: "5 minutes",
+        },
+        {
+          value: 15,
+          label: "15 min",
+          valueLabel: "15 minutes",
+        },
+        {
+          value: 30,
+          label: "30 min",
+          valueLabel: "30 minutes",
+        },
+        {
+          value: 60,
+          label: "1 h",
+          valueLabel: "1 hour",
+        },
+        {
+          value: 120,
+          label: "2 h",
+          valueLabel: "2 hours",
+        },
+        {
+          value: 240,
+          label: "4 h",
+          valueLabel: "4 hours",
+        },
+        {
+          value: 480,
+          label: "8 h",
+          valueLabel: "8 hours",
+        },
+        {
+          value: 1440,
+          label: "24 h",
+          valueLabel: "24 hours",
+        },
+      ];
+
+      let selectedViewsOption;
+      let selectedLifetimeOption;
+
+      function createOptions() {
+        const submitButtonElement = document.getElementById("submit");
+
+        const viewsDropdownElement = document.getElementById("viewsDropdown");
+        const lifetimeDropdownElement = document.getElementById("lifetimeDropdown");
+
+        const viewsValueElement = document.getElementById("viewsValue");
+        const lifetimeValueElement = document.getElementById("lifetimeValue");
+
+        viewsValueElement.parentElement.parentElement.addEventListener("click", () => {
+          flushLink();
+          viewsDropdownElement.classList.toggle("opened");
+          lifetimeDropdownElement.classList.remove("opened");
+        });
+
+        lifetimeValueElement.parentElement.parentElement.addEventListener("click", () => {
+          flushLink();
+          lifetimeDropdownElement.classList.toggle("opened");
+          viewsDropdownElement.classList.remove("opened");
+        });
+
+        viewsValueElement.textContent = numberOfViewsOptions[0];
+        lifetimeValueElement.textContent = lifetimeOptions[0].valueLabel;
+
+        numberOfViewsOptions.forEach((viewsOption, index) => {
+          const optionElement = document.createElement("li");
+          optionElement.className = "option";
+          optionElement.textContent = viewsOption;
+          optionElement.addEventListener("click", (e) => {
+            selectedViewsOption.classList.remove("selected");
+
+            optionElement.classList.add("selected");
+            selectedViewsOption = optionElement;
+
+            viewsValueElement.textContent = viewsOption;
+            viewsDropdownElement.classList.remove("opened");
+            e.stopPropagation()
+          });
+
+          if (index === 0) {
+            selectedViewsOption = optionElement;
+            optionElement.classList.add("selected");
+          }
+
+          viewsDropdownElement.appendChild(optionElement);
+        });
+
+        lifetimeOptions.forEach((lifetimeOption, index) => {
+          const optionElement = document.createElement("li");
+          optionElement.className = "option";
+          optionElement.textContent = lifetimeOption.label;
+          optionElement.addEventListener("click", (e) => {
+            selectedLifetimeOption.classList.remove("selected");
+
+            optionElement.classList.add("selected");
+            selectedLifetimeOption = optionElement;
+
+            lifetimeValueElement.textContent = lifetimeOption.valueLabel;
+            lifetimeDropdownElement.classList.remove("opened");
+            e.stopPropagation()
+          });
+
+          if (index === 0) {
+            selectedLifetimeOption = optionElement;
+            optionElement.classList.add("selected");
+          }
+
+          lifetimeDropdownElement.appendChild(optionElement);
+        });
+
+        document.addEventListener("click", (event) => {
+          if (
+            !viewsValueElement.parentElement.parentElement.contains(event.target) &&
+            !lifetimeValueElement.parentElement.parentElement.contains(event.target)
+          ) {
+            viewsDropdownElement.classList.remove("opened");
+            lifetimeDropdownElement.classList.remove("opened");
+          }
+        });
+
+        const textAreaElement = document.getElementById("secret");
+        textAreaElement.setAttribute("style", "height:" + textAreaElement.scrollHeight + "px;");
+        textAreaElement.addEventListener("input", (event) => {
+          event.target.style.height = 0;
+          event.target.style.height = event.target.scrollHeight + "px";
+        },
+          false
+        );
+      }
+
+      function unfocusCurrentElement() {
+        document.activeElement.blur();
+      }
+
+      async function buttonPress() {
+        if (document.getElementById("secret").value === "") {
+          return;
+        }
+
+        unfocusCurrentElement();
+
+        const baseUrl = window.location.toString().slice(0, -1);
+
+        const options = {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            secret: document.getElementById("secret").value,
+            requestLimit: selectedViewsOption.innerText,
+            timeLimitInMinutes: lifetimeOptions.find((el) => el.label === selectedLifetimeOption.innerText).value
+          }),
+        };
+
+        const response = await fetch(baseUrl, options);
+        const secretID = await response.text();
+
+        document.getElementById("secret").value = "";
+        document.getElementById("secret").dispatchEvent(new Event("input"))
+        document.getElementById("submit").classList.add("disabled");
+        document.getElementById("link").classList.add("visible");
+        document.querySelector("code").innerText = `${baseUrl}/${secretID}`;
+
+        copyToClipboard(`${baseUrl}/${secretID}`);
+      }
+
+      function attachEventListeners() {
+        createOptions();
+        const submitButton = document.getElementById("submit");
+        document.getElementById("secret").addEventListener("input", (event) => {
+          if (event.target.value !== "") {
+            submitButton.classList.remove("disabled");
+          } else {
+            submitButton.classList.add("disabled");
+          }
+        });
+      }
+
+      function flushLink() {
+        document.getElementById("link").classList.remove("visible");
+        setTimeout(() => {
+          document.querySelector("code").innerText = ""
+        }, 300);
+      }
+
+      function copyToClipboard(value) {
+        const el = document.createElement("textarea");
+        el.value = value ? value : event.target.innerText;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        unfocusCurrentElement();
+        if (!value) {
+          document.querySelector("code").innerText = "Copied to clipboard!";
+          setTimeout(() => flushLink(), 500);
+        }
+      }
+    </script>
+  </head>
+  <body onload="attachEventListeners()">
+    <svg width="201" height="20" viewBox="0 0 201 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo">
+      <path
+        d="M10.2001 3.50624C6.46453 3.50624 3.9068 6.40985 3.9068 10.0017C3.9068 13.5662 6.46453 16.4972 10.2001 16.4972C13.0729 16.4972 15.3738 14.7167 16.0038 11.813H10.2001V8.19037H21.5507V11.8096H19.5408C19.0786 16.6684 15.1136 20 10.2001 20C4.22523 20 0 15.7473 0 10.0017C0 4.25611 4.22523 0.00341797 10.2001 0.00341797C12.3846 0.00341797 14.5383 0.664263 16.4353 2.24618L14.2507 5.03338C13.0729 4.0267 11.6964 3.50624 10.2001 3.50624Z"
+        fill="white" />
+      <path
+        d="M22.9271 10.0017C22.9271 4.25611 27.1524 0.00341797 32.8978 0.00341797C38.6159 0.00341797 42.8104 4.25611 42.8104 10.0017C42.8104 15.7473 38.6159 20 32.8978 20C27.1524 20 22.9271 15.7473 22.9271 10.0017ZM32.8978 16.3807C36.3732 16.3807 38.9036 13.71 38.9036 10.0017C38.9036 6.29344 36.3766 3.62266 32.8978 3.62266C29.3917 3.62266 26.8339 6.29344 26.8339 10.0017C26.8339 13.71 29.3951 16.3807 32.8978 16.3807Z"
+        fill="white" />
+      <path
+        d="M45.3407 10.0017C45.3407 4.25611 49.5659 0.00341797 55.3114 0.00341797C61.0295 0.00341797 65.2239 4.25611 65.2239 10.0017C65.2239 15.7473 61.0295 20 55.3114 20C49.5659 20 45.3407 15.7473 45.3407 10.0017ZM55.3114 16.3807C58.7868 16.3807 61.3171 13.71 61.3171 10.0017C61.3171 6.29344 58.7902 3.62266 55.3114 3.62266C51.8052 3.62266 49.2475 6.29344 49.2475 10.0017C49.2475 13.71 51.8052 16.3807 55.3114 16.3807Z"
+        fill="white" />
+      <path
+        d="M67.9803 19.7706V0.232849H73.6984C79.5877 0.232849 83.611 3.8247 83.611 10.0017C83.611 16.1787 79.5877 19.7706 73.6984 19.7706H67.9803ZM73.6984 16.1514C77.5505 16.1514 79.7042 14.1688 79.7042 10.0017C79.7042 5.83463 77.5505 3.85209 73.6984 3.85209H71.8324V16.1514H73.6984Z"
+        fill="white" />
+      <path
+        d="M92.9516 0.232849C96.8584 0.232849 100.108 2.5304 100.108 6.92691C100.108 9.6285 98.6696 11.6384 96.5742 12.7033L101.087 19.7706H96.605L92.7221 13.5354H90.2226V19.7706H86.3706V0.232849H92.9516ZM92.866 10.0291C94.5608 10.0291 96.1975 9.59768 96.1975 6.92691C96.1975 4.22532 94.5608 3.85209 92.866 3.85209H90.2226V10.0291H92.866Z"
+        fill="white" />
+      <path
+        d="M115.451 0.232849V3.85209H107.117V8.163H114.359V11.7822H107.117V16.1514H115.793V19.7706H103.265V0.232849H115.451Z"
+        fill="white" />
+      <path
+        d="M117.807 10.0017C117.807 4.25611 122.117 0.00341797 128.007 0.00341797C133.869 0.00341797 137.717 4.25611 137.717 10.0017H134.009C134.009 6.40985 131.626 3.50624 128.003 3.50624C124.353 3.50624 121.71 6.40985 121.71 10.0017C121.71 13.6518 124.353 16.552 127.832 16.552C128.924 16.552 130.017 16.3225 130.992 15.6617L127.315 11.9842L129.873 9.42646L137.888 17.4422L135.331 20L133.519 18.1887C131.739 19.5686 129.784 20 127.829 20C122.114 20 117.807 15.7473 117.807 10.0017Z"
+        fill="white" />
+      <path
+        d="M140.477 12.9327V0.232849H144.325V12.9327C144.325 15.1447 145.503 16.3808 147.657 16.3808C149.811 16.3808 150.989 15.1447 150.989 12.9327V0.232849H154.837V12.9327C154.837 17.3566 151.704 20 147.654 20C143.603 20 140.477 17.3566 140.477 12.9327Z"
+        fill="white" />
+      <path
+        d="M170.012 0.232849V3.85209H161.682V8.163H168.923V11.7822H161.682V16.1514H170.358V19.7706H157.83V0.232849H170.012Z"
+        fill="white" />
+      <path
+        d="M179.353 3.50625C177.973 3.50625 177.025 4.28351 177.025 5.40318C177.025 6.35165 177.514 7.0125 179.439 7.73155C180.329 8.04657 181.075 8.27598 181.938 8.5636C184.842 9.57028 186.362 11.2926 186.362 14.138C186.362 17.271 183.777 20 179.754 20C177.025 20 174.58 18.9933 172.484 16.867L174.638 14.1072C176.419 15.6583 178.059 16.4938 179.925 16.4938C181.305 16.4938 182.424 15.6309 182.424 14.3092C182.424 13.2751 181.822 12.5835 180.24 12.039L177.768 11.207C174.32 10.0565 173.084 7.87536 173.084 5.57439C173.084 2.18456 175.843 0 179.35 0C181.935 0 183.688 1.09228 185.184 2.49957L183.058 5.22856C181.65 4.0541 180.356 3.50625 179.353 3.50625Z"
+        fill="white" />
+      <path
+        d="M200.787 0.232849V3.85209H196.018V19.7706H192.166V3.85209H187.396V0.232849H200.787Z"
+        fill="white" />
+    </svg>
+    <div class="form">
+      <textarea type="text" placeholder="Confidential information" id="secret" onclick="flushLink()"></textarea>
+      <div class="form-group">
+        <div class="select-field">
+          <span>Number of views</span>
+          <div class="select-value">
+            <span id="viewsValue"></span>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L4.21913 5.02391C4.61946 5.52432 5.38054 5.52432 5.78087 5.02391L9 1" stroke="white" />
+            </svg>
+          </div>
+          <ul id="viewsDropdown" class="dropdown"></ul>
+        </div>
+        <div class="select-field">
+          <span>Accessible for</span>
+          <div class="select-value">
+            <span id="lifetimeValue"></span>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L4.21913 5.02391C4.61946 5.52432 5.38054 5.52432 5.78087 5.02391L9 1" stroke="white" />
+            </svg>
+          </div>
+          <ul id="lifetimeDropdown" class="dropdown"></ul>
+        </div>
+      </div>
+      <button type="button" id="submit" class="disabled" onclick="buttonPress()">
+        Stash into the Safe
+      </button>
+    </div>
+    <div id="link">
+      <span>Link to your secret, keep it safe:</span>
+      <code onclick="copyToClipboard()"></code>
+    </div>
+  </body>
+</html>

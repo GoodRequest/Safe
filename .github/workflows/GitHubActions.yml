@@ -1,0 +1,18 @@
+name: GitHub Actions
+
+on:
+  push:
+    tags:
+      [ 'v**' ]
+        
+jobs:
+  Image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: |
+          bun install
+          docker build -t ${{ secrets.DOCKERHUB_REPOSITORY_NAME }}/safe:${{ github.ref_name }} -f ./Dockerfile .
+          docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_PASSWORD_TOKEN }}
+          docker push ${{ secrets.DOCKERHUB_REPOSITORY_NAME }}/safe:${{ github.ref_name }}
