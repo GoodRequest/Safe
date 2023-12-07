@@ -14,6 +14,14 @@ Deploy the app in a Docker Compose stack with (non-persistent) **Redis** and (re
 
 Once deployed, open the app, input the data, stash it and share the generated **Safe** link as needed.
 
+## Security 101
+
+Limit secret information view count and lifetime as much as possible.
+
+Try not to share sets of secrets, or unnecessarily note their purpose.
+
+Share the generated links only through secure channels. Stay Safe.
+
 ## Additional Resources
 
 <img align="left" width="25" height="25" alt="Bun" src="https://seeklogo.com/images/B/bun-logo-A876328A1F-seeklogo.com.png">[**Bun**](https://bun.sh) documentation is available [here](https://bun.sh/docs).
