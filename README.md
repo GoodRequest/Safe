@@ -26,11 +26,11 @@ Share the generated links only through secure channels. Stay Safe.
 
 <img align="left" width="25" height="25" alt="Bun" src="https://seeklogo.com/images/B/bun-logo-A876328A1F-seeklogo.com.png">[**Bun**](https://bun.sh) documentation is available [here](https://bun.sh/docs).
 
-<img align="left" width="25" height="25" alt="Bun" src="https://redis.io/images/favicons/favicon-32x32.png">[**Redis**](https://redis.io) documentation is available [here](https://redis.io/docs).
+<img align="left" width="25" height="25" alt="Redis" src="https://redis.io/images/favicons/favicon-32x32.png">[**Redis**](https://redis.io) documentation is available [here](https://redis.io/docs).
 
-<img align="left" width="25" height="25" alt="Bun" src="https://www.docker.com/wp-content/uploads/2023/04/cropped-Docker-favicon-32x32.png">[**Docker**](https://www.docker.com) documentation is available [here](https://docs.docker.com).
+<img align="left" width="25" height="25" alt="Docker" src="https://www.docker.com/wp-content/uploads/2023/04/cropped-Docker-favicon-32x32.png">[**Docker**](https://www.docker.com) documentation is available [here](https://docs.docker.com).
 
-<img align="left" width="25" height="25" alt="Bun" src="https://www.nginx.com/wp-content/uploads/2019/10/favicon-48x48.ico">[**NGINX**](https://www.nginx.com) documentation is available [here](https://nginx.org/en/docs/).
+<img align="left" width="25" height="25" alt="NGINX" src="https://www.nginx.com/wp-content/uploads/2019/10/favicon-48x48.ico">[**NGINX**](https://www.nginx.com) documentation is available [here](https://nginx.org/en/docs/).
 
 ## License
 
