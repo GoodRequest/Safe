@@ -1,5 +1,7 @@
 # <img align="left" width="40" height="40" alt="GoodRequest, s.r.o." src="./favicon.png">Safe
 
+[![dockeri.co](https://dockerico.blankenship.io/image/goodrequestcom/safe)](https://hub.docker.com/r/goodrequestcom/safe)
+
 **Safe** enables sharing **confidential information** with a limited **number of views** and **overall lifetime**.
 
 ## Features
