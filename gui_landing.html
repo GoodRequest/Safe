@@ -193,6 +193,7 @@
         color: var(--button-text-color);
         padding: 10px;
         border: none;
+        width: 100%;
         border-radius: var(--input-border-radius);
         cursor: pointer;
         display: flex;
@@ -316,8 +317,6 @@
       let selectedLifetimeOption;
 
       function createOptions() {
-        const submitButtonElement = document.getElementById("submit");
-
         const viewsDropdownElement = document.getElementById("viewsDropdown");
         const lifetimeDropdownElement = document.getElementById("lifetimeDropdown");
 
@@ -409,7 +408,7 @@
         document.activeElement.blur();
       }
 
-      async function buttonPress() {
+      async function buttonPress(internal) {
         if (document.getElementById("secret").value === "") {
           return;
         }
@@ -428,6 +427,7 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            internal,
             secret: document.getElementById("secret").value,
             requestLimit: selectedViewsOption.innerText,
             timeLimitInMinutes: lifetimeOptions.find((el) => el.label === selectedLifetimeOption.innerText).value
@@ -439,7 +439,9 @@
 
         document.getElementById("secret").value = "";
         document.getElementById("secret").dispatchEvent(new Event("input"))
-        document.getElementById("submit").classList.add("disabled");
+        for (submitButton of document.getElementsByTagName("button")) {
+          submitButton.classList.add("disabled");
+        }
         document.getElementById("link").classList.add("visible");
         document.querySelector("code").innerText = `${baseUrl}/${secretID}`;
 
@@ -448,12 +450,16 @@
 
       function attachEventListeners() {
         createOptions();
-        const submitButton = document.getElementById("submit");
+        const submitButtons = document.getElementsByTagName("button");
         document.getElementById("secret").addEventListener("input", (event) => {
           if (event.target.value !== "") {
-            submitButton.classList.remove("disabled");
+            for (submitButton of submitButtons) {
+              submitButton.classList.remove("disabled");
+            }
           } else {
-            submitButton.classList.add("disabled");
+            for (submitButton of submitButtons) {
+              submitButton.classList.add("disabled");
+            }
           }
         });
       }
@@ -540,9 +546,14 @@
           <ul id="lifetimeDropdown" class="dropdown"></ul>
         </div>
       </div>
-      <button type="button" id="submit" class="disabled" onclick="buttonPress()">
-        Stash into the Safe
+      <div class="form-group">
+      <button type="button" id="submit-company" class="disabled" onclick="buttonPress(true)">
+        Stash into the Company Safe
       </button>
+      <button type="button" id="submit-client" class="disabled" onclick="buttonPress(false)">
+        Stash into the Client Safe
+      </button>
+      </div>
       <p>Limit view count and lifetime as much as possible. Try not to share sets of secrets, or unnecessarily note their purpose. Share the generated links only through secure channels. Stay Safe.</p>
     </div>
     <div id="link">

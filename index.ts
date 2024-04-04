@@ -33,9 +33,10 @@ export default {
                 }
 
                 if (method === 'POST' && body) {
-                    const { secret, requestLimit, timeLimitInMinutes } = await Bun.readableStreamToJSON(body)
+                    const { internal, secret, requestLimit, timeLimitInMinutes } = await Bun.readableStreamToJSON(body)
 
-                    const secretID = crypto.randomUUID()
+                    const internalPath = process.env.INTERNAL_PATH || 'internal'
+                    const secretID = `${internal ? internalPath + '/' : ''}${crypto.randomUUID()}`
 
                     await redis.set(`${secretID}-value`, secret, 'EX', timeLimitInMinutes * 60)
                     await redis.set(`${secretID}-requests`, requestLimit, 'EX', timeLimitInMinutes * 60)

@@ -16,6 +16,8 @@ Deploy the app in a Docker Compose stack with (non-persistent) **Redis** and (re
 
 Once deployed, open the app, input the data, stash it and share the generated **Safe** link as needed.
 
+Optionally, limit access to an internal route with the help of NGINX allow and deny configuration.
+
 ## Security 101
 
 Limit secret information view count and lifetime as much as possible.
