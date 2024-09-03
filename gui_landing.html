@@ -79,6 +79,21 @@
         gap: 10px;
       }
 
+      .form-inputs {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      #spinner-holder {
+        display: flex;
+        width: 100%;
+        min-height: 30px;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
       .select-field {
         display: flex;
         justify-content: space-between;
@@ -259,12 +274,71 @@
       }
 
       p {
-        margin-top: 30px;
+        margin-top: 20px;
         color: rgba(255, 255, 255, 0.15);
 
         font-family: "Fira Code", sans-serif;
         font-weight: 100;
         font-size: var(--font-size);
+      }
+
+      #upload {
+        background-color: var(--input-bg-color);
+        color: var(--text-color);
+        padding: 10px;
+        border: none;
+        border-radius: var(--input-border-radius);
+
+        max-width: 100%;
+        min-height: 50px;
+        height: 50px;
+        max-height: 200px;
+
+        resize: none;
+        font-family: "Fira Code", sans-serif;
+        font-weight: 400;
+        font-size: var(--font-size);
+      }
+
+      #upload:focus {
+        outline: none;
+      }
+
+      #file-upload {
+        display: none;
+      }
+
+      #file-upload-label {
+        display: inline-block;
+        background-color: var(--input-bg-color);
+        color: var(--input-placeholder-color);
+        padding: 10px 20px;
+        border-radius: var(--input-border-radius);
+        font-family: "Fira Code", sans-serif;
+        font-size: var(--font-size);
+        text-align: center;
+        cursor: pointer;
+        border: 2px dashed var(--input-placeholder-color);
+        margin-top: 10px;
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--primary-color);
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
     </style>
 
@@ -319,6 +393,8 @@
       function createOptions() {
         const viewsDropdownElement = document.getElementById("viewsDropdown");
         const lifetimeDropdownElement = document.getElementById("lifetimeDropdown");
+        const fileUploadElement = document.getElementById("file-upload");
+        const fileUploadLabelElement = document.getElementById("file-upload-label");
 
         const viewsValueElement = document.getElementById("viewsValue");
         const lifetimeValueElement = document.getElementById("lifetimeValue");
@@ -404,41 +480,77 @@
         );
       }
 
+    const formatFileSize = (bytes) => {
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let i = 0;
+
+      while (bytes >= 1024 && i < units.length - 1) {
+        bytes /= 1024;
+        i++;
+    }
+
+    return `${bytes.toFixed(2)} ${units[i]}`;
+}
+
       function unfocusCurrentElement() {
         document.activeElement.blur();
       }
 
-      async function buttonPress(internal) {
-        if (document.getElementById("secret").value === "") {
+      async function buttonPress(internal) {        
+        const fileUploadElement = document.getElementById("file-upload")
+        const secretElement = document.getElementById("secret")
+        const spinner = document.getElementById('spinner');
+
+        if (secretElement.value === "" && fileUploadElement.value === "") {
           return;
         }
+        
+        const baseUrl = window.location.toString().slice(0, -1);
+        const formData = new FormData();
+
+        if (secretElement.value !== "") {
+          formData.append('secret', secretElement.value);
+        }
+
+        if (fileUploadElement.value !== "") {
+          formData.append('file', fileUploadElement.files[0], fileUploadElement.files[0].name);
+        }
+
+        formData.append('internal', internal);
+        formData.append('requestLimit', selectedViewsOption.innerText);
+        formData.append('timeLimitInMinutes', lifetimeOptions.find((el) => el.label === selectedLifetimeOption.innerText).value);
+
+        const options = {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-cache',
+          credentials: 'same-origin',
+          body: formData
+        };
 
         unfocusCurrentElement();
 
-        const baseUrl = window.location.toString().slice(0, -1);
+        for (submitButton of document.getElementsByTagName("button")) {
+          submitButton.classList.add("disabled");
+        }
+        spinner.style.display = 'inline';
 
-        const options = {
-          method: "POST",
-          mode: "cors",
-          cache: "no-cache",
-          credentials: "same-origin",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            internal,
-            secret: document.getElementById("secret").value,
-            requestLimit: selectedViewsOption.innerText,
-            timeLimitInMinutes: lifetimeOptions.find((el) => el.label === selectedLifetimeOption.innerText).value
-          }),
-        };
+        const response = await fetch(baseUrl, options).finally(() => {
+          for (submitButton of document.getElementsByTagName("button")) {
+            submitButton.classList.remove("disabled");
+          }
 
-        const response = await fetch(baseUrl, options);
+          spinner.style.display = 'none';
+        });
+        
         const secretID = await response.text();
 
-        document.getElementById("secret").value = "";
-        document.getElementById("secret").dispatchEvent(new Event("input"))
+        secretElement.value = "";
+        secretElement.dispatchEvent(new Event("input"))
+
+        fileUploadElement.value = "";
+        fileUploadElement.dispatchEvent(new Event("change"))
+
         for (submitButton of document.getElementsByTagName("button")) {
           submitButton.classList.add("disabled");
         }
@@ -451,8 +563,10 @@
       function attachEventListeners() {
         createOptions();
         const submitButtons = document.getElementsByTagName("button");
+        const fileUploadElement = document.getElementById("file-upload");
+        const fileUploadLabelElement = document.getElementById("file-upload-label");
         document.getElementById("secret").addEventListener("input", (event) => {
-          if (event.target.value !== "") {
+          if (event.target.value !== "" || fileUploadElement.files.length > 0) {
             for (submitButton of submitButtons) {
               submitButton.classList.remove("disabled");
             }
@@ -460,6 +574,35 @@
             for (submitButton of submitButtons) {
               submitButton.classList.add("disabled");
             }
+          }
+        });
+
+        fileUploadElement.addEventListener("change", (event) => {
+          var fileInput = this;
+          var input = event.target;
+          const maxSize = 30 * 1024 * 1024; // 30 MB in bytes
+
+          if (input.files && input.files.length > 0) {
+            if (input.files[0].size > maxSize) {
+              fileUploadLabelElement.textContent = 'File size must be 30MB or less.';
+              input.value = ''; // Clear the file input
+            } else {
+              var fileName = input.files[0].name;
+              var fileSize = formatFileSize(input.files[0].size);
+              fileUploadLabelElement.textContent = `${fileName} (${fileSize})`;
+            }
+
+            if (event.target.value !== "") {
+              for (submitButton of submitButtons) {
+                submitButton.classList.remove("disabled");
+              }
+            } else {
+              for (submitButton of submitButtons) {
+                submitButton.classList.add("disabled");
+              }
+            }
+          } else {
+            fileUploadLabelElement.textContent = 'Upload file'; // Fallback text
           }
         });
       }
@@ -523,7 +666,11 @@
         fill="white" />
     </svg>
     <div class="form">
-      <textarea type="text" placeholder="Confidential information" id="secret" onclick="flushLink()"></textarea>
+      <div class="form-inputs">
+        <textarea type="text" placeholder="Confidential information" id="secret" onclick="flushLink()"></textarea>
+        <label for="file-upload" id="file-upload-label">Encrypted file upload</label>
+        <input type="file" id="file-upload"/>
+      </div>
       <div class="form-group">
         <div class="select-field">
           <span>Number of views</span>
@@ -547,13 +694,12 @@
         </div>
       </div>
       <div class="form-group">
-      <button type="button" id="submit-company" class="disabled" onclick="buttonPress(true)">
-        Stash into the Company Safe
-      </button>
-      <button type="button" id="submit-client" class="disabled" onclick="buttonPress(false)">
-        Stash into the Client Safe
-      </button>
-      </div>
+      <button type="button" id="submit-company" class="disabled" onclick="buttonPress(true)">Stash into the Company Safe</button>
+      <button type="button" id="submit-client" class="disabled" onclick="buttonPress(false)">Stash into the Client Safe</button>
+    </div>
+    <div id="spinner-holder">
+      <div id="spinner" class="spinner" style="display: none;"></div>
+    </div>
       <p>Limit view count and lifetime as much as possible. Try not to share sets of secrets, or unnecessarily note their purpose. Share the generated links only through secure channels. Stay Safe.</p>
     </div>
     <div id="link">

@@ -26,15 +26,38 @@ Try not to share sets of secrets, or unnecessarily note their purpose.
 
 Share the generated links only through secure channels. Stay Safe.
 
+## Environment variables
+
+To make **Safe** run smoothly, add these environment variables to the container configuration:
+```bash
+# Disables Bun telemetry
+DO_NOT_TRACK=1
+
+# Enables connections to the Redis server
+REDIS_URL=
+
+# Path segment used to differentiate
+# between Company (e.g. VPN restricted) 
+# and Client (public) Safe through e.g.
+# NGINX location routing configuration
+INTERNAL_PATH=
+
+# Enables file sharing over AWS S3 (1/4)
+AWS_DEFAULT_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_S3_BUCKET_NAME=
+```
+
 ## Additional Resources
 
-<img align="left" width="25" height="25" alt="Bun" src="https://seeklogo.com/images/B/bun-logo-A876328A1F-seeklogo.com.png">[**Bun**](https://bun.sh) documentation is available [here](https://bun.sh/docs).
+<img align="left" width="25" height="25" alt="Bun" src="https://bun.sh/favicon.ico">&nbsp;[**Bun**](https://bun.sh) documentation is available [here](https://bun.sh/docs).
 
-<img align="left" width="25" height="25" alt="Redis" src="https://redis.io/images/favicons/favicon-32x32.png">[**Redis**](https://redis.io) documentation is available [here](https://redis.io/docs).
+<img align="left" width="25" height="25" alt="Redis" src="https://redis.io/favicon.ico">&nbsp;[**Redis**](https://redis.io) documentation is available [here](https://redis.io/docs).
 
-<img align="left" width="25" height="25" alt="Docker" src="https://www.docker.com/wp-content/uploads/2023/04/cropped-Docker-favicon-32x32.png">[**Docker**](https://www.docker.com) documentation is available [here](https://docs.docker.com).
+<img align="left" width="25" height="25" alt="Docker" src="https://www.docker.com/favicon.ico">&nbsp;[**Docker**](https://www.docker.com) documentation is available [here](https://docs.docker.com).
 
-<img align="left" width="25" height="25" alt="NGINX" src="https://www.nginx.com/wp-content/uploads/2019/10/favicon-48x48.ico">[**NGINX**](https://www.nginx.com) documentation is available [here](https://nginx.org/en/docs/).
+<img align="left" width="25" height="25" alt="NGINX" src="https://nginx.org/favicon.ico">&nbsp;[**NGINX**](https://www.nginx.com) documentation is available [here](https://nginx.org/en/docs/).
 
 ## License
 
