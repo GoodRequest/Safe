@@ -59,7 +59,8 @@ const responseWithLoadedAndRegexedHtmlFile = async (fileName: string, replacemen
 
     if (replacements && replacements.length) {
         replacements.forEach(([pattern, value]) => {
-            fileContent = fileContent.replace(pattern, value)
+            // Replace all occurrences as literal strings to prevent regex injection
+            fileContent = fileContent.split(pattern).join(value)
         })
     }
 

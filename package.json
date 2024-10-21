@@ -1,7 +1,7 @@
 {
   "name": "safe",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "private": true,
   "scripts": {
     "start": "bun index.ts"
